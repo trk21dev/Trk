@@ -1,1 +1,63 @@
-# Trk
+# <!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Jeu de mémoire</title>
+<style>
+:root{--bg:#f6f5ff;--fg:#1d1b2e;--card:#6c5ce7;--face:#fff;--ok:#c8f7d8;--muted:#6b6880;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#14131f;--fg:#f1f0ff;--card:#7d6ff0;--face:#25233a;--ok:#1f4d33;--muted:#a09db8}}
+:root[data-theme="dark"]{--bg:#14131f;--fg:#f1f0ff;--card:#7d6ff0;--face:#25233a;--ok:#1f4d33;--muted:#a09db8}
+html{scroll-padding-top:env(safe-area-inset-top,0px)}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--fg);font-family:-apple-system,system-ui,"Segoe UI",Roboto,sans-serif;display:flex;flex-direction:column;align-items:center;padding:20px 16px;min-height:100vh}
+h1{margin:0 0 4px;font-size:1.6rem}
+.stats{display:flex;gap:20px;color:var(--muted);margin:8px 0 16px}
+.stats b{color:var(--fg)}
+.grid{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;width:100%;max-width:380px}
+.c{aspect-ratio:1;border:0;border-radius:14px;background:var(--card);color:transparent;font-size:2rem;cursor:pointer;transition:transform .25s;display:flex;align-items:center;justify-content:center}
+.c.on{background:var(--face);color:inherit;box-shadow:inset 0 0 0 2px var(--card)}
+.c.ok{background:var(--ok);color:inherit;box-shadow:none;cursor:default}
+button.r{margin-top:20px;padding:12px 24px;border:0;border-radius:12px;background:var(--card);color:#fff;font-size:1rem;font-weight:600}
+#msg{min-height:1.5em;margin-top:14px;font-weight:600}
+</style>
+</head>
+<body>
+<h1>Jeu de mémoire</h1>
+<div>Retrouvez toutes les paires.</div>
+<div class="stats"><span>Coups : <b id="m">0</b></span><span>Paires : <b id="p">0</b>/8</span></div>
+<div class="grid" id="g"></div>
+<div id="msg"></div>
+<button class="r" id="r">Nouvelle partie</button>
+<script>
+var E=["🍎","🐶","🚀","🎸","🌵","⚽","🍕","🦊"],g=document.getElementById("g"),sel=[],lock=false,moves=0,pairs=0;
+function shuffle(a){for(var i=a.length-1;i>0;i--){var j=Math.floor(Math.random()*(i+1));var t=a[i];a[i]=a[j];a[j]=t}return a}
+function start(){
+  g.innerHTML="";sel=[];lock=false;moves=0;pairs=0;
+  document.getElementById("m").textContent=0;document.getElementById("p").textContent=0;document.getElementById("msg").textContent="";
+  shuffle(E.concat(E)).forEach(function(e){
+    var b=document.createElement("button");b.className="c";b.textContent=e;b.dataset.e=e;
+    b.onclick=function(){flip(b)};g.appendChild(b);
+  });
+}
+function flip(b){
+  if(lock||b.classList.contains("on")||b.classList.contains("ok"))return;
+  b.classList.add("on");sel.push(b);
+  if(sel.length<2)return;
+  moves++;document.getElementById("m").textContent=moves;
+  var a=sel[0],c=sel[1];
+  if(a.dataset.e===c.dataset.e){
+    a.classList.add("ok");c.classList.add("ok");sel=[];pairs++;
+    document.getElementById("p").textContent=pairs;
+    if(pairs===8)document.getElementById("msg").textContent="Bravo ! Gagné en "+moves+" coups 🎉";
+  }else{
+    lock=true;
+    setTimeout(function(){a.classList.remove("on");c.classList.remove("on");sel=[];lock=false},800);
+  }
+}
+document.getElementById("r").onclick=start;
+start();
+</script>
+</body>
+</html>
+Trk
